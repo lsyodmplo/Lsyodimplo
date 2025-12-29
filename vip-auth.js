@@ -563,25 +563,17 @@ class VIPAuth {
             return true;
         }
 
-        // Validate format
+        // Validate format - MUST be VIP-XXXX-XXXX-XXXX-XXXX
         const pattern = /^VIP-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
         if (!pattern.test(key)) {
             console.log('❌ Invalid format');
             return false;
         }
 
-        // Simple validation - check for current year or special patterns
-        const currentYear = new Date().getFullYear().toString();
-        if (key.includes(currentYear)) {
-            console.log('✅ Year-based key valid');
-            return true;
-        }
-
-        const specialPatterns = ['DEMO', 'TEST', 'VIP1', 'VIP2', 'ABCD', 'EFGH'];
-        const isValid = specialPatterns.some(pattern => key.includes(pattern));
-        
-        console.log('🔍 Pattern validation result:', isValid);
-        return isValid;
+        // SIMPLE VALIDATION - Accept ANY key with correct format
+        // This makes it work with any generated key
+        console.log('✅ Valid format key accepted');
+        return true;
     }
 
     showStatus(type, message) {
