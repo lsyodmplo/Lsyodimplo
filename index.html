@@ -54,6 +54,53 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+    
+    <!-- VIP Authentication System -->
+    <script src="vip-auth.js"></script>
+    
+    <!-- VIP PROTECTION - KHÔNG ĐƯỢC XÓA -->
+    <script>
+    (function(){
+        // Mã hóa để khó đọc
+        const _vip = {
+            c: function(){return localStorage.getItem('vip_auth_token')!==null;},
+            i: function(){
+                if(!this.c()){
+                    document.documentElement.innerHTML='<body style="margin:0;padding:0;background:#000;color:#fff;font-family:Arial;display:flex;align-items:center;justify-content:center;height:100vh;"><div style="text-align:center;"><h1 style="color:#ff0000;">🔒 VIP ACCESS REQUIRED</h1><p>Website này yêu cầu VIP Key để sử dụng</p><button onclick="location.reload()" style="padding:15px 30px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:16px;margin-top:20px;">Làm mới trang</button></div></body>';
+                    return false;
+                }
+                return true;
+            },
+            p: function(){
+                // Kiểm tra liên tục
+                setInterval(()=>{
+                    if(!this.c()){
+                        document.body.innerHTML='<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#ff0000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;z-index:999999;"><h1>🚫 VIP SESSION EXPIRED</h1></div>';
+                    }
+                },5000);
+                
+                // Chống xóa script
+                const scripts = document.querySelectorAll('script');
+                scripts.forEach(script => {
+                    if(script.src.includes('vip-auth.js')){
+                        script.addEventListener('DOMNodeRemoved', ()=>{
+                            location.reload();
+                        });
+                    }
+                });
+            }
+        };
+        
+        // Khởi tạo ngay
+        document.addEventListener('DOMContentLoaded', ()=>{
+            if(!_vip.i()){return;}
+            _vip.p();
+        });
+        
+        // Backup check
+        window._vip_core = _vip;
+    })();
+    </script>
 </head>
 <body>
     <!-- Mobile Detection Notice -->
@@ -63,6 +110,13 @@
     </div>
 
     <div class="container">
+        <!-- VIP PROTECTION LAYER - KHÔNG ĐƯỢC XÓA -->
+        <script>
+        if(!localStorage.getItem('vip_auth_token')){
+            document.write('<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;z-index:999999;"><div style="text-align:center;"><h1 style="color:#ff6b6b;">🔒 VIP ACCESS REQUIRED</h1><p>Trang web này yêu cầu VIP Key để truy cập</p><p style="color:#ffd93d;">Liên hệ để mua VIP Key:</p><p>📧 Email: your-email@gmail.com</p><p>💬 Telegram: @yourusername</p><p style="color:#6bcf7f;">💰 Giá: 500.000 VNĐ - Trọn đời</p><button onclick="location.reload()" style="padding:15px 30px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:16px;margin-top:20px;">Làm mới trang</button></div></div>');
+        }
+        </script>
+        
         <!-- Header - ULTIMATE EDITION -->
         <header class="header ultimate-header">
             <div class="cosmic-background">
@@ -716,7 +770,7 @@
                 <div class="footer-section">
                     <div class="footer-logo">
                         <i class="fas fa-heart"></i>
-                        <span>Credits Kati Sunoki</span>
+                        <span>Made with love for RPG Maker community</span>
                     </div>
                     <p class="footer-links">
                         <a href="https://github.com/rpgmaker-translator" target="_blank" rel="noopener">
@@ -803,5 +857,88 @@
     <!-- Scripts -->
     <script src="script.js"></script>
     <script src="autotrans.js"></script>
+</body>
+</html>
+
+    <!-- FINAL VIP PROTECTION - KHÔNG ĐƯỢC XÓA -->
+    <script>
+    // Kiểm tra cuối cùng
+    (function(){
+        let checkCount = 0;
+        const finalCheck = setInterval(() => {
+            checkCount++;
+            if (!localStorage.getItem('vip_auth_token')) {
+                document.body.innerHTML = `
+                    <div style="
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        z-index: 999999;
+                    ">
+                        <div style="text-align: center; max-width: 600px; padding: 40px;">
+                            <h1 style="font-size: 48px; margin-bottom: 20px;">🔒</h1>
+                            <h2 style="margin-bottom: 30px;">VIP ACCESS REQUIRED</h2>
+                            <p style="font-size: 18px; margin-bottom: 30px; line-height: 1.6;">
+                                Để sử dụng <strong>RPG Maker AI Translator ULTIMATE</strong>, bạn cần có VIP Key
+                            </p>
+                            <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px; margin-bottom: 30px;">
+                                <h3 style="color: #ffd93d; margin-bottom: 20px;">💰 Thông tin mua VIP Key</h3>
+                                <p style="margin: 10px 0;">📧 <strong>Email:</strong> your-email@gmail.com</p>
+                                <p style="margin: 10px 0;">💬 <strong>Telegram:</strong> @yourusername</p>
+                                <p style="margin: 10px 0; color: #6bcf7f;"><strong>Giá:</strong> 500.000 VNĐ</p>
+                                <p style="margin: 10px 0; color: #ff9ff3;"><strong>Ưu đãi:</strong> Trọn đời, không giới hạn</p>
+                            </div>
+                            <button onclick="location.reload()" style="
+                                padding: 15px 40px;
+                                background: #6366f1;
+                                color: white;
+                                border: none;
+                                border-radius: 25px;
+                                cursor: pointer;
+                                font-size: 16px;
+                                font-weight: bold;
+                                transition: all 0.3s ease;
+                            " onmouseover="this.style.background='#5855eb'" onmouseout="this.style.background='#6366f1'">
+                                🔄 Làm mới trang
+                            </button>
+                        </div>
+                    </div>
+                `;
+                clearInterval(finalCheck);
+            }
+            
+            // Dừng check sau 100 lần (khoảng 10 giây)
+            if (checkCount > 100) {
+                clearInterval(finalCheck);
+            }
+        }, 100);
+    })();
+    </script>
+
+    <!-- Load main script -->
+    <script src="script.js"></script>
+    
+    <!-- VIP Integration Check -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Kiểm tra tích hợp VIP
+        if (typeof window._vip_core === 'undefined') {
+            console.error('VIP system not loaded properly');
+            setTimeout(() => {
+                if (!localStorage.getItem('vip_auth_token')) {
+                    location.reload();
+                }
+            }, 1000);
+        }
+    });
+    </script>
 </body>
 </html>
