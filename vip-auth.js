@@ -14,19 +14,25 @@ class VIPAuth {
         // Show loading screen
         this.showLoadingScreen();
         
-        // Small delay to show loading screen
+        // Longer delay để user có thời gian thấy loading screen
         setTimeout(() => {
             // Kiểm tra xác thực hiện có
             if (!this.checkExistingAuth()) {
                 console.log('❌ No VIP auth found, showing modal');
-                this.hideLoadingScreen();
-                this.showModal();
+                // Thêm delay trước khi hide loading và show modal
+                setTimeout(() => {
+                    this.hideLoadingScreen();
+                    // Thêm delay nhỏ để transition mượt
+                    setTimeout(() => {
+                        this.showModal();
+                    }, 500);
+                }, 1000);
             } else {
                 console.log('✅ VIP auth found, unlocking website');
                 this.hideLoadingScreen();
                 this.unlockWebsite();
             }
-        }, 1000);
+        }, 2000); // Tăng từ 1000ms lên 2000ms
         
         this.setupProtection();
     }
@@ -52,6 +58,27 @@ class VIPAuth {
         const loadingScreen = document.getElementById('vipLoadingScreen');
         if (loadingScreen) {
             loadingScreen.style.display = 'flex';
+            
+            // Update loading text progressively
+            const loadingText = loadingScreen.querySelector('p');
+            if (loadingText) {
+                const messages = [
+                    'Đang kiểm tra quyền truy cập...',
+                    'Đang xác thực VIP key...',
+                    'Đang chuẩn bị giao diện...'
+                ];
+                
+                let messageIndex = 0;
+                const updateMessage = () => {
+                    if (messageIndex < messages.length && loadingScreen.style.display !== 'none') {
+                        loadingText.textContent = messages[messageIndex];
+                        messageIndex++;
+                        setTimeout(updateMessage, 800);
+                    }
+                };
+                
+                updateMessage();
+            }
         }
     }
 
@@ -104,6 +131,10 @@ class VIPAuth {
                                 <button id="verifyBtn">XÁC THỰC</button>
                             </div>
                             <small>💡 Key có định dạng: VIP-XXXX-XXXX-XXXX-XXXX</small>
+                            <div class="input-tip">
+                                <i class="fas fa-clock"></i>
+                                <span>Bạn có đủ thời gian để nhập key, không bị giới hạn thời gian</span>
+                            </div>
                         </div>
 
                         <div id="vipStatus" class="vip-status" style="display: none;">
@@ -309,6 +340,23 @@ class VIPAuth {
             font-size: 12px;
         }
 
+        .input-tip {
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-tip i {
+            color: #3b82f6;
+        }
+
         .vip-status {
             background: rgba(15, 23, 42, 0.8);
             border: 1px solid rgba(99, 102, 241, 0.3);
@@ -321,6 +369,18 @@ class VIPAuth {
         .vip-status.loading {
             border-color: rgba(59, 130, 246, 0.5);
             background: rgba(59, 130, 246, 0.1);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                border-color: rgba(59, 130, 246, 0.5);
+                box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+            }
+            50% { 
+                border-color: rgba(59, 130, 246, 0.8);
+                box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+            }
         }
 
         .vip-status.success {
@@ -526,14 +586,25 @@ class VIPAuth {
         this.showStatus('loading', '🔍 Đang xác thực VIP Key...');
 
         try {
-            // Simulate loading
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Enhanced loading với progress steps - slower timing
+            const steps = [
+                '🔍 Đang kiểm tra định dạng key...',
+                '🌐 Đang kết nối database...',
+                '🔐 Đang xác thực quyền truy cập...',
+                '✅ Xác thực thành công!'
+            ];
+            
+            // Slower timing để user có thời gian đọc
+            for (let i = 0; i < steps.length; i++) {
+                this.showStatus('loading', steps[i]);
+                await new Promise(resolve => setTimeout(resolve, 1200)); // Tăng từ 800ms lên 1200ms
+            }
 
             if (this.validateKey(key)) {
                 this.isAuthenticated = true;
                 this.vipKey = key;
                 this.saveAuth(key);
-                this.showStatus('success', '✅ VIP Key hợp lệ! Đang mở khóa...');
+                this.showStatus('success', '✅ VIP Key hợp lệ! Đang mở khóa website...');
                 
                 console.log('🎯 VIP Auth Status:', {
                     isAuthenticated: this.isAuthenticated,
@@ -541,21 +612,36 @@ class VIPAuth {
                     timestamp: new Date().toISOString()
                 });
                 
-                setTimeout(() => {
-                    this.hideModal();
-                    this.unlockWebsite();
+                // Hiển thị unlock steps với timing chậm hơn
+                setTimeout(async () => {
+                    const unlockSteps = [
+                        '🔓 Đang mở khóa giao diện...',
+                        '⚡ Đang kích hoạt tính năng...',
+                        '🎉 Hoàn tất! Chào mừng VIP!'
+                    ];
                     
-                    // Double check after unlock
+                    for (let i = 0; i < unlockSteps.length; i++) {
+                        this.showStatus('success', unlockSteps[i]);
+                        await new Promise(resolve => setTimeout(resolve, 1000)); // Tăng từ 600ms lên 1000ms
+                    }
+                    
+                    // Thêm delay trước khi hide modal
                     setTimeout(() => {
-                        const container = document.getElementById('mainContainer');
-                        console.log('🔍 Container status after unlock:', {
-                            exists: !!container,
-                            display: container?.style.display,
-                            opacity: container?.style.opacity,
-                            visible: container?.offsetHeight > 0
-                        });
-                    }, 1000);
-                }, 1500);
+                        this.hideModal();
+                        this.unlockWebsite();
+                        
+                        // Double check after unlock
+                        setTimeout(() => {
+                            const container = document.getElementById('mainContainer');
+                            console.log('🔍 Container status after unlock:', {
+                                exists: !!container,
+                                display: container?.style.display,
+                                opacity: container?.style.opacity,
+                                visible: container?.offsetHeight > 0
+                            });
+                        }, 1000);
+                    }, 1500); // Thêm delay 1.5s để user thấy success message
+                }, 1000);
             } else {
                 throw new Error('VIP Key không hợp lệ hoặc đã hết hạn');
             }
@@ -740,15 +826,15 @@ class VIPAuth {
             e.preventDefault();
         });
 
-        // Periodic check
-        setInterval(() => {
-            if (!this.isAuthenticated) {
-                const token = localStorage.getItem('vip_auth_token');
-                if (!token) {
-                    location.reload();
-                }
-            }
-        }, 5000);
+        // Periodic check - DISABLED để user có thời gian nhập key
+        // setInterval(() => {
+        //     if (!this.isAuthenticated) {
+        //         const token = localStorage.getItem('vip_auth_token');
+        //         if (!token) {
+        //             location.reload();
+        //         }
+        //     }
+        // }, 5000);
     }
 
     isVIPAuthenticated() {
