@@ -1896,10 +1896,16 @@ if (document.readyState === 'loading') {
 
 // VIP Authentication Integration
 function checkVIPBeforeAction(actionName) {
+    console.log('🔍 Checking VIP for action:', actionName);
+    console.log('🔍 VIP Auth object:', window.vipAuth);
+    console.log('🔍 Is authenticated:', window.vipAuth?.isVIPAuthenticated());
+    
     if (!window.vipAuth || !window.vipAuth.isVIPAuthenticated()) {
+        console.log('❌ VIP check failed for:', actionName);
         Toast.error('VIP Required', `Cần xác thực VIP để sử dụng ${actionName}`);
         return false;
     }
+    console.log('✅ VIP check passed for:', actionName);
     return true;
 }
 
