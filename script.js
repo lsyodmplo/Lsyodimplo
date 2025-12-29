@@ -1940,7 +1940,9 @@ setInterval(() => {
     }
 }, 10000); // Check every 10 seconds
 
-console.log('🔐 VIP Authentication system integrated with main script'); init function
+console.log('🔐 VIP Authentication system integrated with main script');
+
+// Use the final initialization function
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initFinal);
 } else {
