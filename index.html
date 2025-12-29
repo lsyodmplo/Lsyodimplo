@@ -55,68 +55,72 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
     
-    <!-- VIP Authentication System -->
-    <script src="vip-auth.js"></script>
-    
-    <!-- VIP PROTECTION - KHÔNG ĐƯỢC XÓA -->
-    <script>
-    (function(){
-        // Mã hóa để khó đọc
-        const _vip = {
-            c: function(){return localStorage.getItem('vip_auth_token')!==null;},
-            i: function(){
-                if(!this.c()){
-                    document.documentElement.innerHTML='<body style="margin:0;padding:0;background:#000;color:#fff;font-family:Arial;display:flex;align-items:center;justify-content:center;height:100vh;"><div style="text-align:center;"><h1 style="color:#ff0000;">🔒 VIP ACCESS REQUIRED</h1><p>Website này yêu cầu VIP Key để sử dụng</p><button onclick="location.reload()" style="padding:15px 30px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:16px;margin-top:20px;">Làm mới trang</button></div></body>';
-                    return false;
-                }
-                return true;
-            },
-            p: function(){
-                // Kiểm tra liên tục
-                setInterval(()=>{
-                    if(!this.c()){
-                        document.body.innerHTML='<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#ff0000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;z-index:999999;"><h1>🚫 VIP SESSION EXPIRED</h1></div>';
-                    }
-                },5000);
-                
-                // Chống xóa script
-                const scripts = document.querySelectorAll('script');
-                scripts.forEach(script => {
-                    if(script.src.includes('vip-auth.js')){
-                        script.addEventListener('DOMNodeRemoved', ()=>{
-                            location.reload();
-                        });
-                    }
-                });
-            }
-        };
+    <!-- VIP Protection Styles -->
+    <style>
+        /* Hide main content by default until VIP auth */
+        #mainContainer {
+            display: none !important;
+            filter: blur(10px) !important;
+            pointer-events: none !important;
+        }
         
-        // Khởi tạo ngay
-        document.addEventListener('DOMContentLoaded', ()=>{
-            if(!_vip.i()){return;}
-            _vip.p();
-        });
+        /* VIP Modal should always be on top */
+        .vip-modal {
+            z-index: 999999 !important;
+        }
         
-        // Backup check
-        window._vip_core = _vip;
-    })();
-    </script>
+        /* Loading screen while VIP auth loads */
+        .vip-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999998;
+        }
+        
+        .vip-loading-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .vip-loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(99, 102, 241, 0.3);
+            border-top: 3px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
+    <!-- VIP Loading Screen -->
+    <div id="vipLoadingScreen" class="vip-loading">
+        <div class="vip-loading-content">
+            <div class="vip-loading-spinner"></div>
+            <h3>🔐 VIP Authentication</h3>
+            <p>Đang kiểm tra quyền truy cập...</p>
+        </div>
+    </div>
+
     <!-- Mobile Detection Notice -->
     <div id="mobileNotice" class="mobile-notice" style="display: none;">
         <i class="fas fa-mobile-alt"></i>
         <span>Chế độ Mobile được kích hoạt</span>
     </div>
 
-    <div class="container">
-        <!-- VIP PROTECTION LAYER - KHÔNG ĐƯỢC XÓA -->
-        <script>
-        if(!localStorage.getItem('vip_auth_token')){
-            document.write('<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;z-index:999999;"><div style="text-align:center;"><h1 style="color:#ff6b6b;">🔒 VIP ACCESS REQUIRED</h1><p>Trang web này yêu cầu VIP Key để truy cập</p><p style="color:#ffd93d;">Liên hệ để mua VIP Key:</p><p>📧 Email: your-email@gmail.com</p><p>💬 Telegram: @yourusername</p><p style="color:#6bcf7f;">💰 Giá: 500.000 VNĐ - Trọn đời</p><button onclick="location.reload()" style="padding:15px 30px;background:#6366f1;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:16px;margin-top:20px;">Làm mới trang</button></div></div>');
-        }
-        </script>
-        
+    <div class="container" id="mainContainer" style="display: none; filter: blur(10px); pointer-events: none;">
         <!-- Header - ULTIMATE EDITION -->
         <header class="header ultimate-header">
             <div class="cosmic-background">
@@ -349,7 +353,7 @@
                 </div>
             </section>
 
-            <!-- File Upload Section - IMPROVED -->
+            <!-- File Upload Section -->
             <section class="card file-upload">
                 <div class="card-header">
                     <i class="fas fa-upload"></i>
@@ -430,159 +434,6 @@
                 </div>
             </section>
 
-            <!-- Translation Options -->
-            <section class="card translation-options">
-                <div class="card-header">
-                    <i class="fas fa-sliders-h"></i>
-                    <h2>Tùy chọn dịch</h2>
-                </div>
-                <div class="card-body">
-                    <div class="options-grid">
-                        <div class="option-group">
-                            <h4><i class="fas fa-comments"></i> Nội dung dịch</h4>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="translateDialogue" checked>
-                                <span>
-                                    <strong>Hội thoại & Sự kiện</strong>
-                                    <small>Dialogue, choices, event messages</small>
-                                </span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="translateNames" checked>
-                                <span>
-                                    <strong>Tên nhân vật & Kỹ năng</strong>
-                                    <small>Character names, skill names</small>
-                                </span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="translateDescriptions" checked>
-                                <span>
-                                    <strong>Mô tả vật phẩm</strong>
-                                    <small>Item descriptions, notes</small>
-                                </span>
-                            </label>
-                        </div>
-
-                        <div class="option-group">
-                            <h4><i class="fas fa-shield-alt"></i> Safety & Protection</h4>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="smartFiltering" checked>
-                                <span>
-                                    <strong>Smart Filtering</strong>
-                                    <small>Tự động bỏ qua plugin names, file paths</small>
-                                </span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="pluginProtection" checked>
-                                <span>
-                                    <strong>Plugin Tag Protection</strong>
-                                    <small>Bảo vệ plugin tags khỏi bị dịch nhầm</small>
-                                </span>
-                            </label>
-                            <div class="form-group">
-                                <label for="safeMode">
-                                    <i class="fas fa-shield-alt"></i>
-                                    Safe Mode Level
-                                </label>
-                                <select id="safeMode" class="input-field">
-                                    <option value="balanced">🛡️ Balanced (Recommended)</option>
-                                    <option value="strict">🔒 Strict (Never translate notes)</option>
-                                    <option value="aggressive">⚡ Aggressive (Translate more)</option>
-                                </select>
-                                <small class="help-text">
-                                    <i class="fas fa-info-circle"></i>
-                                    Strict mode: Không bao giờ dịch note fields để tránh phá plugin tags
-                                </small>
-                            </div>
-                        </div>
-
-                        <div class="option-group">
-                            <h4><i class="fas fa-brain"></i> AI Smart Features</h4>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="preserveFormatting" checked>
-                                <span>
-                                    <strong>Giữ định dạng</strong>
-                                    <small>Preserve \C[n], \V[n], \N[n]...</small>
-                                </span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="skipTranslated">
-                                <span>
-                                    <strong>Bỏ qua đã dịch</strong>
-                                    <small>Skip already translated text</small>
-                                </span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="contextAware" checked>
-                                <span>
-                                    <strong>Context-Aware Translation</strong>
-                                    <small>AI hiểu ngữ cảnh game RPG</small>
-                                </span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="qualityCheck" checked>
-                                <span>
-                                    <strong>Quality Check</strong>
-                                    <small>Kiểm tra chất lượng dịch tự động</small>
-                                </span>
-                            </label>
-                        </div>
-
-                        <div class="option-group">
-                            <h4><i class="fas fa-cogs"></i> Advanced Settings</h4>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="autoDownload">
-                                <span>
-                                    <strong>Tự động tải xuống</strong>
-                                    <small>Auto download khi hoàn thành</small>
-                                </span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="translateNotes">
-                                <span>
-                                    <strong>Translate Notes (Risky)</strong>
-                                    <small>⚠️ Có thể phá plugin tags - Chỉ bật nếu chắc chắn</small>
-                                </span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="debugMode">
-                                <span>
-                                    <strong>Debug Mode</strong>
-                                    <small>Show detailed logs for troubleshooting</small>
-                                </span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="backupOriginal" checked>
-                                <span>
-                                    <strong>Backup Original</strong>
-                                    <small>Giữ bản gốc trong file đã dịch</small>
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="batchSize">
-                            <i class="fas fa-layer-group"></i>
-                            Số câu dịch mỗi lần: <span id="batchSizeValue" class="value-badge">10</span>
-                        </label>
-                        <input 
-                            type="range" 
-                            id="batchSize" 
-                            min="5" 
-                            max="50" 
-                            value="10"
-                            step="5"
-                            class="slider"
-                        >
-                        <div class="slider-labels">
-                            <span>5 (Chậm hơn)</span>
-                            <span>50 (Nhanh hơn)</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <!-- Action Buttons -->
             <section class="action-section">
                 <button class="btn btn-primary btn-large btn-action" id="startTranslation" disabled>
@@ -598,347 +449,12 @@
                     <span>Tải xuống tất cả</span>
                 </button>
             </section>
-
-            <!-- Progress Section - ULTIMATE WITH LIVE PREVIEW -->
-            <section class="card progress-section ultimate-progress" id="progressSection" style="display: none;">
-                <div class="card-header">
-                    <i class="fas fa-tasks"></i>
-                    <h2>Live Translation Monitor</h2>
-                    <div class="progress-percentage ultimate-percentage" id="progressPercentage">0%</div>
-                </div>
-                <div class="card-body">
-                    <!-- Live Preview Panel -->
-                    <div class="live-preview-panel" id="livePreviewPanel">
-                        <div class="preview-header">
-                            <h3><i class="fas fa-eye"></i> Live Translation Preview</h3>
-                            <div class="preview-controls">
-                                <button class="btn btn-small" id="pausePreview" title="Pause preview">
-                                    <i class="fas fa-pause"></i>
-                                </button>
-                                <button class="btn btn-small" id="expandPreview" title="Expand preview">
-                                    <i class="fas fa-expand"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="preview-content">
-                            <div class="translation-stream" id="translationStream">
-                                <div class="stream-item demo">
-                                    <div class="stream-header">
-                                        <span class="file-name">Waiting for translation...</span>
-                                        <span class="stream-time">--:--</span>
-                                    </div>
-                                    <div class="translation-pair">
-                                        <div class="original-text">
-                                            <label>Original:</label>
-                                            <span>Ready to translate your RPG Maker files!</span>
-                                        </div>
-                                        <div class="translated-text">
-                                            <label>Translated:</label>
-                                            <span>Sẵn sàng dịch các file RPG Maker của bạn!</span>
-                                        </div>
-                                    </div>
-                                    <div class="ai-thinking" style="display: none;">
-                                        <i class="fas fa-brain"></i>
-                                        <span class="thinking-text">AI is thinking...</span>
-                                        <div class="thinking-dots">
-                                            <span>.</span><span>.</span><span>.</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Progress Bar -->
-                    <div class="progress-bar-container ultimate-progress-container">
-                        <div class="progress-bar ultimate-progress-bar" id="progressBar">
-                            <div class="progress-bar-fill ultimate-fill"></div>
-                            <span class="progress-text ultimate-text" id="progressText">0%</span>
-                            <div class="progress-particles"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Stats Grid -->
-                    <div class="stats-grid ultimate-stats-grid">
-                        <div class="stat-item ultimate-stat">
-                            <div class="stat-icon">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                            <div class="stat-content">
-                                <div class="stat-value" id="filesProcessed">0 / 0</div>
-                                <div class="stat-label">Files Processed</div>
-                            </div>
-                        </div>
-                        <div class="stat-item ultimate-stat">
-                            <div class="stat-icon">
-                                <i class="fas fa-comment"></i>
-                            </div>
-                            <div class="stat-content">
-                                <div class="stat-value" id="textsTranslated">0</div>
-                                <div class="stat-label">Texts Translated</div>
-                            </div>
-                        </div>
-                        <div class="stat-item ultimate-stat">
-                            <div class="stat-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="stat-content">
-                                <div class="stat-value" id="timeElapsed">00:00</div>
-                                <div class="stat-label">Time Elapsed</div>
-                            </div>
-                        </div>
-                        <div class="stat-item ultimate-stat">
-                            <div class="stat-icon">
-                                <i class="fas fa-coins"></i>
-                            </div>
-                            <div class="stat-content">
-                                <div class="stat-value" id="estimatedCost">$0.00</div>
-                                <div class="stat-label">Cost</div>
-                            </div>
-                        </div>
-                        <div class="stat-item ultimate-stat">
-                            <div class="stat-icon">
-                                <i class="fas fa-tachometer-alt"></i>
-                            </div>
-                            <div class="stat-content">
-                                <div class="stat-value" id="translationSpeed">0</div>
-                                <div class="stat-label">Texts/Min</div>
-                            </div>
-                        </div>
-                        <div class="stat-item ultimate-stat">
-                            <div class="stat-icon">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="stat-content">
-                                <div class="stat-value" id="successRate">100%</div>
-                                <div class="stat-label">Success Rate</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Current File Banner -->
-                    <div class="current-file-banner ultimate-banner">
-                        <div class="file-icon-wrapper ultimate-icon">
-                            <i class="fas fa-file-code"></i>
-                        </div>
-                        <div class="current-file-info">
-                            <div class="label">Currently Processing:</div>
-                            <div class="filename" id="currentFile">-</div>
-                            <div class="file-progress">
-                                <div class="mini-progress-bar">
-                                    <div class="mini-progress-fill" id="currentFileProgress"></div>
-                                </div>
-                                <span class="file-progress-text" id="currentFileProgressText">0%</span>
-                            </div>
-                        </div>
-                        <div class="spinner-wrapper ultimate-spinner" id="fileSpinner" style="display: none;">
-                            <div class="spinner quantum-spinner"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Log Section -->
-            <section class="card log-section">
-                <div class="card-header">
-                    <i class="fas fa-terminal"></i>
-                    <h2>Nhật ký hoạt động</h2>
-                    <div class="log-actions">
-                        <button class="btn btn-small" id="autoScrollLog" title="Auto-scroll">
-                            <i class="fas fa-arrow-down"></i>
-                        </button>
-                        <button class="btn btn-small" id="clearLog" title="Xóa log">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="log-container" id="logContainer">
-                        <div class="log-entry log-info">
-                            <span class="log-icon"><i class="fas fa-info-circle"></i></span>
-                            <span class="log-time">[00:00:00]</span>
-                            <span class="log-message">🚀 RPG Maker Translator sẵn sàng!</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </main>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <i class="fas fa-heart"></i>
-                        <span>Made with love for RPG Maker community</span>
-                    </div>
-                    <p class="footer-links">
-                        <a href="https://github.com/rpgmaker-translator" target="_blank" rel="noopener">
-                            <i class="fab fa-github"></i> GitHub
-                        </a>
-                        <a href="https://platform.deepseek.com" target="_blank" rel="noopener">
-                            <i class="fas fa-robot"></i> DeepSeek AI
-                        </a>
-                        <a href="https://www.rpgmakerweb.com" target="_blank" rel="noopener">
-                            <i class="fas fa-gamepad"></i> RPG Maker
-                        </a>
-                        <a href="https://discord.gg/rpgmaker" target="_blank" rel="noopener">
-                            <i class="fab fa-discord"></i> Community
-                        </a>
-                    </p>
-                    <div class="footer-features">
-                        <span class="feature-badge">
-                            <i class="fas fa-shield-alt"></i> Secure
-                        </span>
-                        <span class="feature-badge">
-                            <i class="fas fa-rocket"></i> Fast
-                        </span>
-                        <span class="feature-badge">
-                            <i class="fas fa-mobile-alt"></i> Mobile
-                        </span>
-                        <span class="feature-badge">
-                            <i class="fas fa-brain"></i> AI-Powered
-                        </span>
-                    </div>
-                </div>
-                <div class="footer-info">
-                    <div class="version-info">
-                        <span class="version">v3.0.0 Pro</span>
-                        <span class="separator">•</span>
-                        <span>Smart AI Translation</span>
-                    </div>
-                    <div class="footer-stats">
-                        <div class="stat">
-                            <i class="fas fa-users"></i>
-                            <span>10K+ Users</span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-language"></i>
-                            <span>50+ Languages</span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-file-alt"></i>
-                            <span>1M+ Files Translated</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Toast Notification -->
-    <div class="toast" id="toast">
-        <div class="toast-icon"></div>
-        <div class="toast-content">
-            <div class="toast-title"></div>
-            <div class="toast-message"></div>
-        </div>
-        <button class="toast-close">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
-        <div class="loading-spinner">
-            <div class="spinner-large"></div>
-            <p>Đang xử lý...</p>
-        </div>
-    </div>
-
-    <!-- Protection Status Indicator -->
-    <div class="protection-status protected" id="protectionStatus">
-        <div class="protection-icon">
-            <i class="fas fa-shield-alt"></i>
-        </div>
-        <span id="protectionText">Plugin Protection Active</span>
     </div>
 
     <!-- Scripts -->
+    <script src="vip-auth.js"></script>
     <script src="script.js"></script>
     <script src="autotrans.js"></script>
-</body>
-</html>
-
-    <!-- FINAL VIP PROTECTION - KHÔNG ĐƯỢC XÓA -->
-    <script>
-    // Kiểm tra cuối cùng
-    (function(){
-        let checkCount = 0;
-        const finalCheck = setInterval(() => {
-            checkCount++;
-            if (!localStorage.getItem('vip_auth_token')) {
-                document.body.innerHTML = `
-                    <div style="
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                        z-index: 999999;
-                    ">
-                        <div style="text-align: center; max-width: 600px; padding: 40px;">
-                            <h1 style="font-size: 48px; margin-bottom: 20px;">🔒</h1>
-                            <h2 style="margin-bottom: 30px;">VIP ACCESS REQUIRED</h2>
-                            <p style="font-size: 18px; margin-bottom: 30px; line-height: 1.6;">
-                                Để sử dụng <strong>RPG Maker AI Translator ULTIMATE</strong>, bạn cần có VIP Key
-                            </p>
-                            <div style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px; margin-bottom: 30px;">
-                                <h3 style="color: #ffd93d; margin-bottom: 20px;">💰 Thông tin mua VIP Key</h3>
-                                <p style="margin: 10px 0;">📧 <strong>Email:</strong> your-email@gmail.com</p>
-                                <p style="margin: 10px 0;">💬 <strong>Telegram:</strong> @yourusername</p>
-                                <p style="margin: 10px 0; color: #6bcf7f;"><strong>Giá:</strong> 500.000 VNĐ</p>
-                                <p style="margin: 10px 0; color: #ff9ff3;"><strong>Ưu đãi:</strong> Trọn đời, không giới hạn</p>
-                            </div>
-                            <button onclick="location.reload()" style="
-                                padding: 15px 40px;
-                                background: #6366f1;
-                                color: white;
-                                border: none;
-                                border-radius: 25px;
-                                cursor: pointer;
-                                font-size: 16px;
-                                font-weight: bold;
-                                transition: all 0.3s ease;
-                            " onmouseover="this.style.background='#5855eb'" onmouseout="this.style.background='#6366f1'">
-                                🔄 Làm mới trang
-                            </button>
-                        </div>
-                    </div>
-                `;
-                clearInterval(finalCheck);
-            }
-            
-            // Dừng check sau 100 lần (khoảng 10 giây)
-            if (checkCount > 100) {
-                clearInterval(finalCheck);
-            }
-        }, 100);
-    })();
-    </script>
-
-    <!-- Load main script -->
-    <script src="script.js"></script>
-    
-    <!-- VIP Integration Check -->
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Kiểm tra tích hợp VIP
-        if (typeof window._vip_core === 'undefined') {
-            console.error('VIP system not loaded properly');
-            setTimeout(() => {
-                if (!localStorage.getItem('vip_auth_token')) {
-                    location.reload();
-                }
-            }, 1000);
-        }
-    });
-    </script>
 </body>
 </html>

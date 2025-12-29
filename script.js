@@ -1,6 +1,3 @@
-// ===== VIP PROTECTION - KHÔNG ĐƯỢC XÓA =====
-(function(){const _0x1a2b=['VIP-','split','join','btoa','atob','localStorage','getItem','setItem','removeItem','createElement','appendChild','innerHTML','style','display','none','block','addEventListener','click','keypress','value','trim','length','test','fetch','POST','application/json','Authorization','Bearer','then','json','catch','error','warn','log','setTimeout','clearTimeout','Date','now','Math','random','toString','substr','padStart','floor','body','head','document','window','location','reload','alert','confirm','prompt','console','navigator','userAgent','toLowerCase','indexOf','includes','replace','substring','charAt','toUpperCase','slice','push','pop','shift','unshift','splice','reverse','sort','filter','map','forEach','find','findIndex','some','every','reduce','Object','keys','values','entries','assign','freeze','seal','preventExtensions','defineProperty','getOwnPropertyDescriptor','hasOwnProperty','isPrototypeOf','propertyIsEnumerable','toLocaleString','valueOf','Array','isArray','from','of','String','fromCharCode','charCodeAt','Number','parseInt','parseFloat','isNaN','isFinite','Boolean','RegExp','exec','match','search','replace','split','JSON','parse','stringify','Error','TypeError','ReferenceError','SyntaxError','RangeError','EvalError','URIError','encodeURI','decodeURI','encodeURIComponent','decodeURIComponent','escape','unescape','eval','Function','arguments','caller','callee','apply','call','bind','prototype','constructor','__proto__','hasOwnProperty','isPrototypeOf','propertyIsEnumerable','toLocaleString','toString','valueOf'];let _0x2c3d=function(_0x4e5f,_0x6789){_0x4e5f=_0x4e5f-0x0;let _0x8abc=_0x1a2b[_0x4e5f];return _0x8abc;};window._vip_check=function(){return localStorage.getItem('vip_auth_token')!==null;};window._vip_init=function(){if(!window._vip_check()){document.body.innerHTML='<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;z-index:999999;"><div><h1>🔒 VIP ACCESS REQUIRED</h1><p>This website requires VIP authentication</p><button onclick="location.reload()" style="padding:10px 20px;font-size:16px;background:#6366f1;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:20px;">Refresh</button></div></div>';return false;}return true;};})();
-
 // ===== Global State - ULTIMATE v4.0 =====
 const AppState = {
     apiKey: '',
@@ -750,13 +747,7 @@ const LivePreview = {
 // ===== API Manager =====
 const APIManager = {
     async testConnection() {
-        // VIP CHECK - KHÔNG ĐƯỢC XÓA
-        if(!window._vip_check || !window._vip_check()){
-            document.body.innerHTML='<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#ff0000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;z-index:999999;"><h1>🚫 UNAUTHORIZED ACCESS</h1></div>';
-            return false;
-        }
-        
-        // Kiểm tra VIP trước khi test API
+        // VIP CHECK - Kiểm tra VIP trước khi test API
         if (!window.vipAuth || !window.vipAuth.isVIPAuthenticated()) {
             Toast.error('VIP Required', 'Cần xác thực VIP để sử dụng chức năng này');
             return false;
@@ -810,8 +801,11 @@ const APIManager = {
 // ===== File Manager =====
 const FileManager = {
     addFiles(files) {
-        // VIP CHECK - CRITICAL
-        if(!window._vip_check()){location.reload();return;}
+        // VIP CHECK - Kiểm tra VIP trước khi thêm file
+        if (!window.vipAuth || !window.vipAuth.isVIPAuthenticated()) {
+            Toast.error('VIP Required', 'Cần xác thực VIP để sử dụng chức năng này');
+            return;
+        }
         
         const jsonFiles = Array.from(files).filter(file => 
             file.name.toLowerCase().endsWith('.json')
@@ -1893,7 +1887,60 @@ function initFinal() {
     }, 2000);
 }
 
-// Use the final init function
+// Use the final initialization function
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFinal);
+} else {
+    initFinal();
+}
+
+// VIP Authentication Integration
+function checkVIPBeforeAction(actionName) {
+    if (!window.vipAuth || !window.vipAuth.isVIPAuthenticated()) {
+        Toast.error('VIP Required', `Cần xác thực VIP để sử dụng ${actionName}`);
+        return false;
+    }
+    return true;
+}
+
+// Override critical functions with VIP checks
+const originalStartTranslation = TranslationController.start;
+TranslationController.start = function() {
+    if (!checkVIPBeforeAction('chức năng dịch')) return;
+    return originalStartTranslation.call(this);
+};
+
+const originalAddFiles = FileManager.addFiles;
+FileManager.addFiles = function(files) {
+    if (!checkVIPBeforeAction('tải file lên')) return;
+    return originalAddFiles.call(this, files);
+};
+
+const originalTestConnection = APIManager.testConnection;
+APIManager.testConnection = function() {
+    if (!checkVIPBeforeAction('test API')) return Promise.resolve(false);
+    return originalTestConnection.call(this);
+};
+
+// Global VIP status check
+window.isVIPActive = function() {
+    return window.vipAuth && window.vipAuth.isVIPAuthenticated();
+};
+
+// Periodic VIP check
+setInterval(() => {
+    if (!window.isVIPActive()) {
+        const container = document.getElementById('mainContainer');
+        if (container && container.style.display !== 'none') {
+            container.style.display = 'none';
+            container.style.filter = 'blur(10px)';
+            container.style.pointerEvents = 'none';
+            location.reload();
+        }
+    }
+}, 10000); // Check every 10 seconds
+
+console.log('🔐 VIP Authentication system integrated with main script'); init function
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initFinal);
 } else {
