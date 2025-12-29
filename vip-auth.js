@@ -1,92 +1,157 @@
-// ===== VIP AUTHENTICATION SYSTEM - ULTIMATE SECURITY =====
-// Hệ thống xác thực VIP với bảo mật cao, chống bypass
+// ===== VIP AUTHENTICATION SYSTEM - ULTIMATE SECURITY v2.0 =====
+// Hệ thống xác thực VIP với bảo mật cao, chống bypass, UI siêu xịn
 
 class VIPAuth {
     constructor() {
         this.isAuthenticated = false;
         this.vipKey = null;
         this.serverUrl = 'https://your-domain.com/api'; // Thay bằng domain thật của bạn
-        this.encryptionKey = 'RPG_MAKER_VIP_2024_ULTIMATE'; // Key mã hóa
-        this.initAuth();
+        this.encryptionKey = 'RPG_MAKER_VIP_2024_ULTIMATE';
+        
+        // Khởi tạo ngay lập tức
+        this.forceInit();
     }
 
-    // Khởi tạo hệ thống xác thực
-    initAuth() {
-        this.createAuthModal();
-        this.checkExistingAuth();
-        this.protectWebsite();
-        this.setupEventListeners();
+    // Khởi tạo bắt buộc - không thể bỏ qua
+    forceInit() {
+        // Kiểm tra ngay lập tức
+        if (!this.checkExistingAuth()) {
+            this.showVIPModal();
+        }
+        
+        // Bảo vệ chống xóa
+        this.setupProtection();
     }
 
-    // Tạo modal đăng nhập VIP
-    createAuthModal() {
+    // Kiểm tra xác thực hiện có
+    checkExistingAuth() {
+        const savedKey = this.getStoredKey();
+        if (savedKey && this.validateStoredKey(savedKey)) {
+            this.isAuthenticated = true;
+            this.vipKey = savedKey;
+            this.unlockWebsite();
+            return true;
+        }
+        return false;
+    }
+
+    // Hiển thị modal VIP siêu xịn
+    showVIPModal() {
+        // Xóa modal cũ nếu có
+        const existingModal = document.getElementById('vipAuthModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // Tạo modal mới siêu xịn
         const modalHTML = `
-            <div id="vipAuthModal" class="vip-modal" style="display: block;">
-                <div class="vip-modal-content">
-                    <div class="vip-header">
-                        <div class="vip-logo">
-                            <i class="fas fa-crown"></i>
-                            <h2>🌟 VIP ACCESS REQUIRED 🌟</h2>
+            <div id="vipAuthModal" class="vip-modal-ultimate">
+                <div class="vip-background-effects">
+                    <div class="vip-particles"></div>
+                    <div class="vip-waves"></div>
+                    <div class="vip-glow-orbs"></div>
+                </div>
+                
+                <div class="vip-modal-content-ultimate">
+                    <div class="vip-header-ultimate">
+                        <div class="vip-crown-icon">
+                            <div class="crown-main">👑</div>
+                            <div class="crown-sparkles">
+                                <span>✨</span><span>💎</span><span>⭐</span><span>🌟</span>
+                            </div>
                         </div>
-                        <div class="vip-subtitle">
-                            RPG Maker AI Translator ULTIMATE v4.0
+                        <h1 class="vip-title-ultimate">VIP ACCESS REQUIRED</h1>
+                        <p class="vip-subtitle-ultimate">RPG Maker AI Translator ULTIMATE v4.0</p>
+                        <div class="vip-status-bar">
+                            <div class="status-item">🔒 SECURED</div>
+                            <div class="status-item">🛡️ PROTECTED</div>
+                            <div class="status-item">⚡ PREMIUM</div>
                         </div>
                     </div>
                     
-                    <div class="vip-body">
-                        <div class="vip-message">
-                            <i class="fas fa-lock"></i>
+                    <div class="vip-body-ultimate">
+                        <div class="vip-message-box">
+                            <div class="message-icon">🔐</div>
+                            <h3>Truy cập VIP được yêu cầu</h3>
                             <p>Để sử dụng công cụ dịch AI cao cấp này, bạn cần có <strong>VIP Key</strong></p>
-                            <p class="vip-note">🔑 Mỗi key chỉ sử dụng được trên 1 thiết bị</p>
+                            <div class="vip-features">
+                                <div class="feature">🤖 AI Translation</div>
+                                <div class="feature">⚡ Live Preview</div>
+                                <div class="feature">🎯 Smart Filtering</div>
+                                <div class="feature">🚀 Unlimited Usage</div>
+                            </div>
                         </div>
                         
-                        <div class="vip-form">
-                            <div class="form-group">
-                                <label for="vipKeyInput">
-                                    <i class="fas fa-key"></i>
-                                    Nhập VIP Key của bạn:
-                                </label>
-                                <div class="input-with-button">
-                                    <input 
-                                        type="text" 
-                                        id="vipKeyInput" 
-                                        placeholder="VIP-XXXX-XXXX-XXXX-XXXX"
-                                        class="vip-input"
-                                        maxlength="23"
-                                    >
-                                    <button type="button" class="btn-vip-verify" id="verifyVipKey">
-                                        <i class="fas fa-check"></i>
-                                        Xác thực
-                                    </button>
-                                </div>
-                                <small class="vip-help">
-                                    <i class="fas fa-info-circle"></i>
-                                    Key có định dạng: VIP-XXXX-XXXX-XXXX-XXXX
-                                </small>
+                        <div class="vip-input-section">
+                            <label class="vip-label">
+                                <span class="label-icon">🔑</span>
+                                Nhập VIP Key của bạn
+                            </label>
+                            <div class="vip-input-container">
+                                <input 
+                                    type="text" 
+                                    id="vipKeyInput" 
+                                    class="vip-input-ultimate"
+                                    placeholder="VIP-XXXX-XXXX-XXXX-XXXX"
+                                    maxlength="23"
+                                    autocomplete="off"
+                                    spellcheck="false"
+                                >
+                                <button type="button" class="vip-verify-btn" id="verifyVipKey">
+                                    <span class="btn-icon">🚀</span>
+                                    <span class="btn-text">XÁC THỰC</span>
+                                    <div class="btn-glow"></div>
+                                </button>
+                            </div>
+                            <div class="vip-input-help">
+                                <span class="help-icon">💡</span>
+                                Key có định dạng: VIP-XXXX-XXXX-XXXX-XXXX
+                            </div>
+                        </div>
+                        
+                        <div class="vip-status-display" id="vipStatus" style="display: none;">
+                            <div class="status-icon"></div>
+                            <div class="status-text"></div>
+                            <div class="status-progress">
+                                <div class="progress-bar"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="vip-purchase-section">
+                            <div class="purchase-header">
+                                <h3>🛒 Chưa có VIP Key?</h3>
+                                <p>Liên hệ để mua VIP Key và trải nghiệm đầy đủ tính năng</p>
                             </div>
                             
-                            <div class="vip-status" id="vipStatus" style="display: none;">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <span>Đang xác thực...</span>
-                            </div>
-                        </div>
-                        
-                        <div class="vip-purchase">
-                            <h3><i class="fas fa-shopping-cart"></i> Chưa có VIP Key?</h3>
-                            <p>Liên hệ để mua VIP Key và trải nghiệm đầy đủ tính năng:</p>
-                            <div class="purchase-options">
-                                <a href="mailto:contact@yourdomain.com" class="btn-purchase">
-                                    <i class="fas fa-envelope"></i>
-                                    Email: contact@yourdomain.com
+                            <div class="contact-options">
+                                <a href="mailto:contact@yourdomain.com" class="contact-btn email-btn">
+                                    <div class="btn-icon">📧</div>
+                                    <div class="btn-content">
+                                        <div class="btn-title">Email</div>
+                                        <div class="btn-subtitle">contact@yourdomain.com</div>
+                                    </div>
                                 </a>
-                                <a href="https://t.me/yourusername" class="btn-purchase" target="_blank">
-                                    <i class="fab fa-telegram"></i>
-                                    Telegram: @yourusername
+                                
+                                <a href="https://t.me/yourusername" class="contact-btn telegram-btn" target="_blank">
+                                    <div class="btn-icon">💬</div>
+                                    <div class="btn-content">
+                                        <div class="btn-title">Telegram</div>
+                                        <div class="btn-subtitle">@yourusername</div>
+                                    </div>
                                 </a>
                             </div>
-                            <div class="price-info">
-                                <span class="price">💰 Giá: 500.000 VNĐ</span>
-                                <span class="features">✨ Trọn đời, không giới hạn</span>
+                            
+                            <div class="pricing-info">
+                                <div class="price-tag">
+                                    <div class="price-amount">500.000 VNĐ</div>
+                                    <div class="price-period">Trọn đời</div>
+                                </div>
+                                <div class="price-features">
+                                    <div class="price-feature">✅ Không giới hạn thời gian</div>
+                                    <div class="price-feature">✅ Tất cả tính năng premium</div>
+                                    <div class="price-feature">✅ Hỗ trợ 24/7</div>
+                                    <div class="price-feature">✅ Cập nhật miễn phí</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -94,29 +159,678 @@ class VIPAuth {
             </div>
         `;
         
+        // Inject CSS siêu xịn
+        this.injectUltimateCSS();
+        
+        // Thêm modal vào DOM
         document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Setup events
+        this.setupModalEvents();
+        
+        // Hiệu ứng xuất hiện
+        this.animateModalEntrance();
     }
 
-    // Kiểm tra xác thực hiện có
-    checkExistingAuth() {
-        const savedKey = this.getStoredKey();
-        if (savedKey) {
-            this.verifyKey(savedKey, true);
+    // CSS siêu xịn
+    injectUltimateCSS() {
+        const cssId = 'vip-ultimate-styles';
+        if (document.getElementById(cssId)) return;
+        
+        const css = `
+        <style id="${cssId}">
+        .vip-modal-ultimate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            animation: vipModalFadeIn 1s ease-out;
         }
-    }
 
-    // Bảo vệ website - ẩn nội dung chính
-    protectWebsite() {
-        const mainContent = document.querySelector('.container');
-        if (mainContent && !this.isAuthenticated) {
-            mainContent.style.display = 'none';
-            mainContent.style.filter = 'blur(10px)';
-            mainContent.style.pointerEvents = 'none';
+        .vip-background-effects {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
         }
+
+        .vip-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+                radial-gradient(2px 2px at 40px 70px, #6366f1, transparent),
+                radial-gradient(1px 1px at 90px 40px, #8b5cf6, transparent),
+                radial-gradient(1px 1px at 130px 80px, #06b6d4, transparent);
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: vipParticlesFloat 20s linear infinite;
+        }
+
+        .vip-waves {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 200px;
+            background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border-radius: 50%;
+            animation: vipWaves 8s ease-in-out infinite;
+        }
+
+        .vip-glow-orbs {
+            position: absolute;
+            top: 20%;
+            right: 10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: vipOrbPulse 4s ease-in-out infinite;
+        }
+
+        .vip-glow-orbs::before {
+            content: '';
+            position: absolute;
+            top: 60%;
+            left: -20%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: vipOrbPulse 6s ease-in-out infinite reverse;
+        }
+
+        .vip-modal-content-ultimate {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 24px;
+            padding: 0;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 100px rgba(99, 102, 241, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            animation: vipContentSlideUp 0.8s ease-out 0.2s both;
+        }
+
+        .vip-header-ultimate {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vip-header-ultimate::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: vipHeaderShimmer 3s ease-in-out infinite;
+        }
+
+        .vip-crown-icon {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .crown-main {
+            font-size: 64px;
+            animation: vipCrownBounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.8));
+        }
+
+        .crown-sparkles {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+        }
+
+        .crown-sparkles span {
+            position: absolute;
+            font-size: 16px;
+            animation: vipSparkleRotate 4s linear infinite;
+        }
+
+        .crown-sparkles span:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); animation-delay: 0s; }
+        .crown-sparkles span:nth-child(2) { top: 50%; right: 0; transform: translateY(-50%); animation-delay: 1s; }
+        .crown-sparkles span:nth-child(3) { bottom: 0; left: 50%; transform: translateX(-50%); animation-delay: 2s; }
+        .crown-sparkles span:nth-child(4) { top: 50%; left: 0; transform: translateY(-50%); animation-delay: 3s; }
+
+        .vip-title-ultimate {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff 0%, #6366f1 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+            animation: vipTitleGlow 2s ease-in-out infinite alternate;
+        }
+
+        .vip-subtitle-ultimate {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+            margin: 0 0 20px 0;
+            font-weight: 500;
+        }
+
+        .vip-status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6366f1;
+            animation: vipStatusPulse 2s ease-in-out infinite;
+        }
+
+        .vip-body-ultimate {
+            padding: 30px;
+        }
+
+        .vip-message-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .message-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: vipIconFloat 3s ease-in-out infinite;
+        }
+
+        .vip-message-box h3 {
+            color: #fff;
+            font-size: 20px;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+        }
+
+        .vip-message-box p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0 0 20px 0;
+            line-height: 1.6;
+        }
+
+        .vip-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .vip-input-section {
+            margin-bottom: 30px;
+        }
+
+        .vip-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .label-icon {
+            font-size: 20px;
+            animation: vipIconSpin 4s linear infinite;
+        }
+
+        .vip-input-container {
+            display: flex;
+            gap: 15px;
+            align-items: stretch;
+        }
+
+        .vip-input-ultimate {
+            flex: 1;
+            padding: 16px 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            letter-spacing: 2px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .vip-input-ultimate:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 
+                0 0 20px rgba(99, 102, 241, 0.4),
+                inset 0 0 20px rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .vip-input-ultimate::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px;
+        }
+
+        .vip-verify-btn {
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .vip-verify-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .vip-verify-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-glow {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: vipBtnGlow 2s ease-in-out infinite;
+        }
+
+        .vip-input-help {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+
+        .help-icon {
+            animation: vipHelpBlink 2s ease-in-out infinite;
+        }
+
+        .vip-status-display {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .vip-status-display.loading {
+            border-color: rgba(59, 130, 246, 0.5);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .vip-status-display.success {
+            border-color: rgba(34, 197, 94, 0.5);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .vip-status-display.error {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .status-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .status-text {
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .status-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 2px;
+            animation: vipProgressMove 2s ease-in-out infinite;
+        }
+
+        .vip-purchase-section {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .purchase-header h3 {
+            color: #fbbf24;
+            font-size: 20px;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+        }
+
+        .purchase-header p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0 0 25px 0;
+            line-height: 1.6;
+        }
+
+        .contact-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 20px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+            border-color: #6366f1;
+        }
+
+        .contact-btn .btn-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .contact-btn .btn-content {
+            text-align: left;
+            flex: 1;
+        }
+
+        .contact-btn .btn-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .contact-btn .btn-subtitle {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .email-btn:hover {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: #22c55e;
+        }
+
+        .telegram-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+        }
+
+        .pricing-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .price-tag {
+            text-align: center;
+        }
+
+        .price-amount {
+            font-size: 24px;
+            font-weight: 900;
+            color: #22c55e;
+            margin-bottom: 5px;
+        }
+
+        .price-period {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 600;
+        }
+
+        .price-features {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .price-feature {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        /* Animations */
+        @keyframes vipModalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes vipContentSlideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(50px) scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        @keyframes vipParticlesFloat {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+
+        @keyframes vipWaves {
+            0%, 100% { transform: translateX(-50%) translateY(0px) rotate(0deg); }
+            50% { transform: translateX(-50%) translateY(-20px) rotate(180deg); }
+        }
+
+        @keyframes vipOrbPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.3; }
+            50% { transform: scale(1.2) rotate(180deg); opacity: 0.6; }
+        }
+
+        @keyframes vipHeaderShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes vipCrownBounce {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        @keyframes vipSparkleRotate {
+            0% { transform: rotate(0deg) translateX(40px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(40px) rotate(-360deg); }
+        }
+
+        @keyframes vipTitleGlow {
+            0% { text-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
+            100% { text-shadow: 0 0 50px rgba(99, 102, 241, 0.8), 0 0 80px rgba(139, 92, 246, 0.6); }
+        }
+
+        @keyframes vipStatusPulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        @keyframes vipIconFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(10deg); }
+        }
+
+        @keyframes vipIconSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes vipBtnGlow {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes vipHelpBlink {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes vipProgressMove {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes vipModalShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes vipBadgeGlow {
+            0% { box-shadow: 0 0 15px rgba(251, 191, 36, 0.6); }
+            100% { box-shadow: 0 0 25px rgba(251, 191, 36, 0.9), 0 0 35px rgba(251, 191, 36, 0.6); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .vip-modal-content-ultimate {
+                margin: 20px;
+                max-height: calc(100vh - 40px);
+            }
+            
+            .vip-header-ultimate {
+                padding: 20px;
+            }
+            
+            .vip-body-ultimate {
+                padding: 20px;
+            }
+            
+            .vip-title-ultimate {
+                font-size: 24px;
+            }
+            
+            .crown-main {
+                font-size: 48px;
+            }
+            
+            .vip-input-container {
+                flex-direction: column;
+            }
+            
+            .contact-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .price-features {
+                text-align: center;
+            }
+        }
+        </style>
+        `;
+        
+        document.head.insertAdjacentHTML('beforeend', css);
     }
 
-    // Thiết lập event listeners
-    setupEventListeners() {
+    // Setup modal events
+    setupModalEvents() {
         const verifyBtn = document.getElementById('verifyVipKey');
         const keyInput = document.getElementById('vipKeyInput');
         
@@ -136,25 +850,36 @@ class VIPAuth {
                 this.formatKeyInput(e.target);
             });
         }
+    }
 
-        // Chống inspect element và bypass
-        this.setupAntiBypass();
+    // Hiệu ứng xuất hiện modal
+    animateModalEntrance() {
+        const modal = document.getElementById('vipAuthModal');
+        if (modal) {
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.transition = 'opacity 0.5s ease';
+                modal.style.opacity = '1';
+            }, 100);
+        }
     }
 
     // Format key input
     formatKeyInput(input) {
-        let value = input.value.replace(/[^A-Z0-9]/g, '');
+        let value = input.value.replace(/[^A-Z0-9]/g, '').toUpperCase();
         let formatted = '';
         
+        // Thêm VIP- prefix nếu chưa có
+        if (!value.startsWith('VIP')) {
+            value = 'VIP' + value;
+        }
+        
+        // Format thành VIP-XXXX-XXXX-XXXX-XXXX
         for (let i = 0; i < value.length; i++) {
-            if (i > 0 && i % 4 === 0) {
+            if (i === 3 || i === 7 || i === 11 || i === 15) {
                 formatted += '-';
             }
             formatted += value[i];
-        }
-        
-        if (!formatted.startsWith('VIP-')) {
-            formatted = 'VIP-' + formatted.replace('VIP-', '');
         }
         
         input.value = formatted;
@@ -166,7 +891,7 @@ class VIPAuth {
         const key = keyInput.value.trim();
         
         if (!key || key.length < 23) {
-            this.showStatus('error', 'Vui lòng nhập đầy đủ VIP Key');
+            this.showStatus('error', '❌ Vui lòng nhập đầy đủ VIP Key', 'Key không đúng định dạng');
             return;
         }
         
@@ -174,10 +899,8 @@ class VIPAuth {
     }
 
     // Xác thực key
-    async verifyKey(key, isAutoCheck = false) {
-        if (!isAutoCheck) {
-            this.showStatus('loading', 'Đang xác thực key...');
-        }
+    async verifyKey(key) {
+        this.showStatus('loading', '🔍 Đang xác thực VIP Key...', 'Vui lòng chờ trong giây lát');
         
         try {
             // Kiểm tra format key
@@ -185,24 +908,26 @@ class VIPAuth {
                 throw new Error('Format key không hợp lệ');
             }
             
-            // Gọi API xác thực (hoặc kiểm tra offline)
-            const isValid = await this.validateKeyWithServer(key);
+            // Validate key (offline hoặc online)
+            const isValid = await this.validateKey(key);
             
             if (isValid) {
                 this.isAuthenticated = true;
                 this.vipKey = key;
                 this.storeKey(key);
-                this.showSuccess();
-                this.unlockWebsite();
+                this.showStatus('success', '✅ VIP Key hợp lệ!', 'Đang mở khóa website...');
+                
+                setTimeout(() => {
+                    this.hideModal();
+                    this.unlockWebsite();
+                }, 2000);
             } else {
                 throw new Error('VIP Key không hợp lệ hoặc đã hết hạn');
             }
             
         } catch (error) {
-            this.showStatus('error', error.message);
-            if (!isAutoCheck) {
-                this.shakeModal();
-            }
+            this.showStatus('error', '❌ Xác thực thất bại', error.message);
+            this.shakeModal();
         }
     }
 
@@ -212,9 +937,21 @@ class VIPAuth {
         return pattern.test(key);
     }
 
-    // Xác thực với server (hoặc thuật toán offline)
-    async validateKeyWithServer(key) {
-        // Phương pháp 1: Kiểm tra với server
+    // Validate key (tương thích với create-key.py)
+    async validateKey(key) {
+        // Danh sách key demo
+        const demoKeys = [
+            'VIP-2024-DEMO-TEST-0001',
+            'VIP-ABCD-EFGH-IJKL-MNOP',
+            'VIP-1234-5678-9ABC-DEF0'
+        ];
+        
+        // Kiểm tra demo key
+        if (demoKeys.includes(key)) {
+            return true;
+        }
+        
+        // Thử xác thực với server (nếu có)
         try {
             const response = await fetch(`${this.serverUrl}/verify-key`, {
                 method: 'POST',
@@ -233,105 +970,62 @@ class VIPAuth {
                 return result.valid;
             }
         } catch (error) {
-            console.log('Server check failed, using offline validation');
+            console.log('Server validation failed, using offline mode');
         }
         
-        // Phương pháp 2: Kiểm tra offline (backup)
+        // Offline validation - kiểm tra với thuật toán tương thích create-key.py
         return this.validateKeyOffline(key);
     }
 
-    // Xác thực offline (thuật toán mã hóa)
+    // Validate offline (tương thích với create-key.py)
     validateKeyOffline(key) {
-        // Danh sách key hợp lệ được mã hóa
-        const validKeys = [
-            'VIP-2024-DEMO-TEST-0001', // Key demo
-            'VIP-ABCD-EFGH-IJKL-MNOP', // Key mẫu
-            // Thêm các key khác ở đây
-        ];
+        // Thuật toán đơn giản - trong thực tế có thể phức tạp hơn
+        // Kiểm tra checksum hoặc pattern đặc biệt
         
-        // Hoặc sử dụng thuật toán tạo key
-        return validKeys.includes(key) || this.generateValidKey() === key;
-    }
-
-    // Tạo key hợp lệ (thuật toán đơn giản)
-    generateValidKey() {
-        const date = new Date();
-        const seed = date.getFullYear() + date.getMonth();
-        // Thuật toán tạo key dựa trên seed
-        return `VIP-${seed}-DEMO-TEST-0001`;
-    }
-
-    // Lấy device ID
-    getDeviceId() {
-        let deviceId = localStorage.getItem('vip_device_id');
-        if (!deviceId) {
-            deviceId = 'DEV-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('vip_device_id', deviceId);
+        // Ví dụ: key có chứa năm hiện tại
+        const currentYear = new Date().getFullYear().toString();
+        if (key.includes(currentYear)) {
+            return true;
         }
-        return deviceId;
-    }
-
-    // Lưu key
-    storeKey(key) {
-        const encrypted = btoa(JSON.stringify({
-            key: key,
-            timestamp: Date.now(),
-            deviceId: this.getDeviceId()
-        }));
-        localStorage.setItem('vip_auth_token', encrypted);
-    }
-
-    // Lấy key đã lưu
-    getStoredKey() {
-        try {
-            const encrypted = localStorage.getItem('vip_auth_token');
-            if (encrypted) {
-                const data = JSON.parse(atob(encrypted));
-                // Kiểm tra thời gian (key có thể hết hạn)
-                const daysPassed = (Date.now() - data.timestamp) / (1000 * 60 * 60 * 24);
-                if (daysPassed < 365) { // Key có hiệu lực 1 năm
-                    return data.key;
-                }
-            }
-        } catch (error) {
-            console.error('Error reading stored key:', error);
-        }
-        return null;
+        
+        // Hoặc kiểm tra pattern đặc biệt
+        const specialPatterns = ['DEMO', 'TEST', 'VIP1', 'VIP2', 'ABCD'];
+        return specialPatterns.some(pattern => key.includes(pattern));
     }
 
     // Hiển thị trạng thái
-    showStatus(type, message) {
+    showStatus(type, title, message) {
         const statusEl = document.getElementById('vipStatus');
         if (!statusEl) return;
         
         statusEl.style.display = 'block';
-        statusEl.className = `vip-status ${type}`;
+        statusEl.className = `vip-status-display ${type}`;
         
         const icons = {
-            loading: 'fas fa-spinner fa-spin',
-            error: 'fas fa-times-circle',
-            success: 'fas fa-check-circle'
+            loading: '⏳',
+            error: '❌',
+            success: '✅'
         };
         
-        statusEl.innerHTML = `
-            <i class="${icons[type]}"></i>
-            <span>${message}</span>
-        `;
+        statusEl.querySelector('.status-icon').textContent = icons[type];
+        statusEl.querySelector('.status-text').innerHTML = `<strong>${title}</strong><br>${message}`;
+        
+        // Scroll to status
+        statusEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    // Hiển thị thành công
-    showSuccess() {
-        this.showStatus('success', '✅ VIP Key hợp lệ! Đang mở khóa...');
-        
-        setTimeout(() => {
-            const modal = document.getElementById('vipAuthModal');
-            if (modal) {
-                modal.style.opacity = '0';
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                }, 500);
-            }
-        }, 1500);
+    // Ẩn modal
+    hideModal() {
+        const modal = document.getElementById('vipAuthModal');
+        if (modal) {
+            modal.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            modal.style.opacity = '0';
+            modal.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                modal.remove();
+            }, 500);
+        }
     }
 
     // Mở khóa website
@@ -341,36 +1035,54 @@ class VIPAuth {
             mainContent.style.display = 'block';
             mainContent.style.filter = 'none';
             mainContent.style.pointerEvents = 'auto';
-            
-            // Hiệu ứng mở khóa
             mainContent.style.opacity = '0';
             mainContent.style.transform = 'scale(0.95)';
             
             setTimeout(() => {
-                mainContent.style.transition = 'all 0.5s ease';
+                mainContent.style.transition = 'all 0.8s ease';
                 mainContent.style.opacity = '1';
                 mainContent.style.transform = 'scale(1)';
-            }, 100);
+            }, 200);
         }
         
-        // Thêm badge VIP
+        // Thêm VIP badge
         this.addVIPBadge();
         
-        // QUAN TRỌNG: Tích hợp sâu vào website
-        this.integrateDeepProtection();
+        // Setup protection
+        this.setupDeepProtection();
     }
-    
-    // Tích hợp bảo vệ sâu - KHÔNG THỂ XÓA
-    integrateDeepProtection() {
-        // Inject VIP check vào tất cả function quan trọng
-        const originalFetch = window.fetch;
-        window.fetch = function(...args) {
-            if (!localStorage.getItem('vip_auth_token')) {
-                throw new Error('VIP authentication required');
-            }
-            return originalFetch.apply(this, args);
-        };
-        
+
+    // Thêm VIP badge
+    addVIPBadge() {
+        const header = document.querySelector('.header-badges');
+        if (header && !header.querySelector('.badge-vip-authenticated')) {
+            const vipBadge = document.createElement('span');
+            vipBadge.className = 'badge badge-vip-authenticated';
+            vipBadge.innerHTML = '<i class="fas fa-crown"></i> VIP ACTIVE';
+            vipBadge.style.cssText = `
+                background: linear-gradient(45deg, #fbbf24, #f59e0b);
+                color: #000;
+                animation: vipBadgeGlow 2s ease-in-out infinite alternate;
+                font-weight: bold;
+                box-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+            `;
+            header.appendChild(vipBadge);
+        }
+    }
+
+    // Shake modal khi lỗi
+    shakeModal() {
+        const modal = document.querySelector('.vip-modal-content-ultimate');
+        if (modal) {
+            modal.style.animation = 'vipModalShake 0.5s ease-in-out';
+            setTimeout(() => {
+                modal.style.animation = '';
+            }, 500);
+        }
+    }
+
+    // Setup bảo vệ sâu
+    setupDeepProtection() {
         // Bảo vệ localStorage
         const originalRemoveItem = localStorage.removeItem;
         localStorage.removeItem = function(key) {
@@ -381,495 +1093,88 @@ class VIPAuth {
             return originalRemoveItem.apply(this, arguments);
         };
         
-        // Bảo vệ DOM
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'childList') {
-                    mutation.removedNodes.forEach((node) => {
-                        if (node.tagName === 'SCRIPT' && 
-                            (node.src && node.src.includes('vip-auth.js'))) {
-                            location.reload();
-                        }
-                    });
-                }
-            });
-        });
-        
-        observer.observe(document.head, {
-            childList: true,
-            subtree: true
-        });
-        
         // Kiểm tra định kỳ
         setInterval(() => {
             if (!this.isVIPAuthenticated()) {
-                document.body.innerHTML = `
-                    <div style="
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background: linear-gradient(45deg, #ff0000, #000000);
-                        color: white;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-family: Arial, sans-serif;
-                        font-size: 24px;
-                        text-align: center;
-                        z-index: 999999;
-                    ">
-                        <div>
-                            <h1>🚫 VIP SESSION EXPIRED</h1>
-                            <p>Your VIP session has expired or been tampered with</p>
-                            <button onclick="location.reload()" style="
-                                padding: 15px 30px;
-                                font-size: 16px;
-                                background: #6366f1;
-                                color: #fff;
-                                border: none;
-                                border-radius: 8px;
-                                cursor: pointer;
-                                margin-top: 20px;
-                            ">Refresh Page</button>
-                        </div>
-                    </div>
-                `;
+                location.reload();
             }
-        }, 3000);
+        }, 5000);
     }
 
-    // Thêm badge VIP
-    addVIPBadge() {
-        const header = document.querySelector('.header-badges');
-        if (header) {
-            const vipBadge = document.createElement('span');
-            vipBadge.className = 'badge badge-vip authenticated';
-            vipBadge.innerHTML = '<i class="fas fa-crown"></i> VIP ACTIVE';
-            header.appendChild(vipBadge);
+    // Utility methods
+    getDeviceId() {
+        let deviceId = localStorage.getItem('vip_device_id');
+        if (!deviceId) {
+            deviceId = 'DEV-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('vip_device_id', deviceId);
         }
+        return deviceId;
     }
 
-    // Shake modal khi lỗi
-    shakeModal() {
-        const modal = document.querySelector('.vip-modal-content');
-        if (modal) {
-            modal.classList.add('shake');
-            setTimeout(() => {
-                modal.classList.remove('shake');
-            }, 500);
+    storeKey(key) {
+        const encrypted = btoa(JSON.stringify({
+            key: key,
+            timestamp: Date.now(),
+            deviceId: this.getDeviceId()
+        }));
+        localStorage.setItem('vip_auth_token', encrypted);
+    }
+
+    getStoredKey() {
+        try {
+            const encrypted = localStorage.getItem('vip_auth_token');
+            if (encrypted) {
+                const data = JSON.parse(atob(encrypted));
+                return data.key;
+            }
+        } catch (error) {
+            console.error('Error reading stored key:', error);
         }
+        return null;
     }
 
-    // Chống bypass và inspect element
-    setupAntiBypass() {
-        // Chống F12
+    validateStoredKey(key) {
+        // Kiểm tra key đã lưu có hợp lệ không
+        return this.isValidKeyFormat(key);
+    }
+
+    setupProtection() {
+        // Chống F12, right-click, etc.
         document.addEventListener('keydown', (e) => {
             if (e.key === 'F12' || 
                 (e.ctrlKey && e.shiftKey && e.key === 'I') ||
                 (e.ctrlKey && e.shiftKey && e.key === 'C') ||
                 (e.ctrlKey && e.key === 'u')) {
                 e.preventDefault();
-                this.showAntiBypassWarning();
                 return false;
             }
         });
 
-        // Chống right click
         document.addEventListener('contextmenu', (e) => {
             e.preventDefault();
-            this.showAntiBypassWarning();
-        });
-
-        // Detect DevTools
-        let devtools = {
-            open: false,
-            orientation: null
-        };
-        
-        setInterval(() => {
-            if (window.outerHeight - window.innerHeight > 200 || 
-                window.outerWidth - window.innerWidth > 200) {
-                if (!devtools.open) {
-                    devtools.open = true;
-                    this.handleDevToolsOpen();
-                }
-            } else {
-                devtools.open = false;
-            }
-        }, 500);
-
-        // Chống copy code
-        document.addEventListener('selectstart', (e) => {
-            if (!this.isAuthenticated) {
-                e.preventDefault();
-            }
         });
     }
 
-    // Cảnh báo chống bypass
-    showAntiBypassWarning() {
-        if (!this.isAuthenticated) {
-            alert('🚫 Chức năng này bị vô hiệu hóa!\n\nVui lòng nhập VIP Key để sử dụng.');
-        }
-    }
-
-    // Xử lý khi mở DevTools
-    handleDevToolsOpen() {
-        if (!this.isAuthenticated) {
-            document.body.innerHTML = `
-                <div style="
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: linear-gradient(45deg, #ff0000, #000000);
-                    color: white;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-family: Arial, sans-serif;
-                    font-size: 24px;
-                    text-align: center;
-                    z-index: 999999;
-                ">
-                    <div>
-                        <h1>🚫 ACCESS DENIED</h1>
-                        <p>Developer tools detected!</p>
-                        <p>Please refresh and enter valid VIP Key</p>
-                        <button onclick="location.reload()" style="
-                            padding: 10px 20px;
-                            font-size: 16px;
-                            background: #fff;
-                            color: #000;
-                            border: none;
-                            border-radius: 5px;
-                            cursor: pointer;
-                            margin-top: 20px;
-                        ">Refresh Page</button>
-                    </div>
-                </div>
-            `;
-        }
-    }
-
-    // Kiểm tra trạng thái xác thực
     isVIPAuthenticated() {
         return this.isAuthenticated;
     }
-
-    // Logout VIP
-    logout() {
-        this.isAuthenticated = false;
-        this.vipKey = null;
-        localStorage.removeItem('vip_auth_token');
-        location.reload();
-    }
 }
 
-// CSS cho VIP Auth Modal
-const vipAuthCSS = `
-<style>
-.vip-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.95);
-    backdrop-filter: blur(10px);
-    z-index: 999999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: vipFadeIn 0.5s ease;
-}
-
-.vip-modal-content {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border: 2px solid #6366f1;
-    border-radius: 20px;
-    padding: 30px;
-    max-width: 500px;
-    width: 90%;
-    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.vip-modal-content::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, transparent, rgba(99, 102, 241, 0.1), transparent);
-    animation: vipShimmer 2s infinite;
-    pointer-events: none;
-}
-
-.vip-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.vip-logo i {
-    font-size: 48px;
-    color: #fbbf24;
-    margin-bottom: 10px;
-    animation: vipPulse 2s infinite;
-}
-
-.vip-header h2 {
-    color: #f1f5f9;
-    margin: 10px 0;
-    font-size: 24px;
-    text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
-}
-
-.vip-subtitle {
-    color: #94a3b8;
-    font-size: 14px;
-}
-
-.vip-message {
-    background: rgba(99, 102, 241, 0.1);
-    border: 1px solid rgba(99, 102, 241, 0.3);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-.vip-message i {
-    font-size: 32px;
-    color: #6366f1;
-    margin-bottom: 15px;
-}
-
-.vip-message p {
-    color: #f1f5f9;
-    margin: 10px 0;
-    line-height: 1.5;
-}
-
-.vip-note {
-    color: #fbbf24 !important;
-    font-weight: bold;
-}
-
-.vip-form {
-    margin-bottom: 25px;
-}
-
-.vip-form label {
-    color: #f1f5f9;
-    font-weight: bold;
-    margin-bottom: 10px;
-    display: block;
-}
-
-.vip-input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #374151;
-    border-radius: 8px;
-    background: #1f2937;
-    color: #f1f5f9;
-    font-size: 16px;
-    font-family: 'Courier New', monospace;
-    text-align: center;
-    letter-spacing: 2px;
-}
-
-.vip-input:focus {
-    outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
-}
-
-.input-with-button {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.btn-vip-verify {
-    padding: 12px 20px;
-    background: linear-gradient(45deg, #6366f1, #8b5cf6);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.btn-vip-verify:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
-}
-
-.vip-help {
-    color: #94a3b8;
-    font-size: 12px;
-}
-
-.vip-status {
-    padding: 10px;
-    border-radius: 8px;
-    text-align: center;
-    margin-top: 15px;
-}
-
-.vip-status.loading {
-    background: rgba(59, 130, 246, 0.1);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    color: #3b82f6;
-}
-
-.vip-status.error {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #ef4444;
-}
-
-.vip-status.success {
-    background: rgba(34, 197, 94, 0.1);
-    border: 1px solid rgba(34, 197, 94, 0.3);
-    color: #22c55e;
-}
-
-.vip-purchase {
-    background: rgba(251, 191, 36, 0.1);
-    border: 1px solid rgba(251, 191, 36, 0.3);
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-}
-
-.vip-purchase h3 {
-    color: #fbbf24;
-    margin-bottom: 15px;
-}
-
-.vip-purchase p {
-    color: #f1f5f9;
-    margin-bottom: 15px;
-}
-
-.purchase-options {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-}
-
-.btn-purchase {
-    padding: 10px 15px;
-    background: rgba(99, 102, 241, 0.2);
-    color: #6366f1;
-    text-decoration: none;
-    border-radius: 8px;
-    border: 1px solid rgba(99, 102, 241, 0.3);
-    transition: all 0.3s ease;
-    font-size: 14px;
-}
-
-.btn-purchase:hover {
-    background: rgba(99, 102, 241, 0.3);
-    transform: translateY(-2px);
-}
-
-.price-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.price {
-    color: #22c55e;
-    font-weight: bold;
-}
-
-.features {
-    color: #94a3b8;
-    font-size: 12px;
-}
-
-.badge-vip.authenticated {
-    background: linear-gradient(45deg, #fbbf24, #f59e0b);
-    color: #000;
-    animation: vipGlow 2s infinite;
-}
-
-.shake {
-    animation: vipShake 0.5s ease-in-out;
-}
-
-@keyframes vipFadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes vipShimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
-@keyframes vipPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-@keyframes vipGlow {
-    0%, 100% { box-shadow: 0 0 5px rgba(251, 191, 36, 0.5); }
-    50% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.8); }
-}
-
-@keyframes vipShake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    75% { transform: translateX(10px); }
-}
-
-@media (max-width: 768px) {
-    .vip-modal-content {
-        margin: 20px;
-        padding: 20px;
-    }
-    
-    .input-with-button {
-        flex-direction: column;
-    }
-    
-    .purchase-options {
-        flex-direction: column;
-    }
-    
-    .price-info {
-        flex-direction: column;
-        text-align: center;
-    }
-}
-</style>
-`;
-
-// Inject CSS
-document.head.insertAdjacentHTML('beforeend', vipAuthCSS);
-
-// Khởi tạo VIP Auth khi trang load
+// Khởi tạo VIP Auth ngay lập tức
 let vipAuth;
-document.addEventListener('DOMContentLoaded', () => {
-    vipAuth = new VIPAuth();
-});
+
+// Khởi tạo ngay khi script load
+(function() {
+    // Đảm bảo khởi tạo ngay lập tức
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            vipAuth = new VIPAuth();
+        });
+    } else {
+        vipAuth = new VIPAuth();
+    }
+})();
 
 // Export để sử dụng trong các file khác
 window.VIPAuth = VIPAuth;
+window.vipAuth = vipAuth;
